@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ultimaWTExp — reproducible RNA-seq workflow (FASTQ to reports)</title>
+<meta name="description" content="A production-grade, reproducible Nextflow DSL2 RNA-seq pipeline: FASTQ to differential expression, splicing, fusions, enrichment and HTML reports. Docker/Apptainer, HPC-ready.">
+<style>
+  :root {
+    --accent: #1E6B4F; --accent-2: #2D8B6A; --text: #1C1B18; --muted: #6F6B61;
+    --bg: #F7F6F3; --surface: #FFFFFF; --border: #E5E2DB;
+    --code-bg: #11231C; --code-fg: #D7E9DF;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         background: var(--bg); color: var(--text); line-height: 1.6; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  header { text-align: center; margin-bottom: 2.5rem; }
+  header h1 { color: var(--accent); font-size: 2.5rem; margin: 0 0 .35rem; letter-spacing: -0.5px; }
+  header .tag { color: var(--text); font-size: 1.12rem; font-weight: 600; margin: 0 0 .5rem; }
+  header p { color: var(--muted); margin: .15rem 0; font-size: .95rem; }
+  .badges { margin: 1rem 0; }
+  .badges img { margin: .15rem; vertical-align: middle; }
+  nav { text-align: center; margin: 1.5rem 0 2.5rem; }
+  nav a { display: inline-block; margin: .25rem .4rem; padding: .45rem 1.1rem;
+          border: 1px solid var(--accent); border-radius: 999px; color: var(--accent);
+          text-decoration: none; font-weight: 600; font-size: .9rem; }
+  nav a:hover { background: var(--accent); color: #fff; }
+  section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+            padding: 1.6rem 1.8rem; margin: 1.25rem 0; }
+  section h2 { color: var(--accent); margin-top: 0; font-size: 1.4rem; }
+  pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem 1.1rem; border-radius: 10px;
+        overflow-x: auto; font-size: .86rem; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .card { border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; background: #fff; }
+  .card h3 { margin: 0 0 .4rem; font-size: 1.02rem; color: var(--accent-2); }
+  .card p { margin: 0; font-size: .9rem; color: var(--muted); }
+  footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 2.5rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ultimaWTExp</h1>
+    <p class="tag">FASTQ&nbsp;→&nbsp;differential expression, splicing, fusions, enrichment &amp; reports</p>
+    <p>A production-grade, fully reproducible <strong>Nextflow DSL2</strong> RNA-seq analysis platform.</p>
+    <div class="badges">
+      <img alt="Nextflow" src="https://img.shields.io/badge/nextflow-%E2%89%A523.04-23aa62">
+      <img alt="License" src="https://img.shields.io/badge/license-MIT-blue">
+      <img alt="Platforms" src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20HPC-lightgrey">
+    </div>
+  </header>
+
+  <nav>
+    <a href="https://github.com/ebareke/ultimaWTExp">GitHub</a>
+    <a href="https://github.com/ebareke/ultimaWTExp/blob/main/INSTALLATION.md">Install</a>
+    <a href="https://github.com/ebareke/ultimaWTExp/blob/main/USAGE.md">Usage</a>
+    <a href="https://github.com/ebareke/ultimaWTExp/blob/main/ARCHITECTURE.md">Architecture</a>
+    <a href="https://github.com/ebareke/ultimaWTExp/blob/main/FAQ.md">FAQ</a>
+  </nav>
+
+  <section>
+    <h2>Run it</h2>
+    <pre><code>nextflow run ebareke/ultimaWTExp \
+    --input samplesheet.csv \
+    --design sample_design.tsv \
+    --fasta genome.fa --gtf genes.gtf \
+    --organism human \
+    -profile docker</code></pre>
+    <p>On a cluster, swap in <code>-profile slurm,apptainer</code>. No tools to install — one
+       container image carries the entire toolchain.</p>
+  </section>
+
+  <section>
+    <h2>What you get</h2>
+    <div class="grid">
+      <div class="card"><h3>QC, end to end</h3><p>FastQC, fastp, Picard, Qualimap, RSeQC, preseq, dupRadar → one MultiQC report.</p></div>
+      <div class="card"><h3>Flexible alignment</h3><p>STAR (2-pass, chimeric) and HISAT2; featureCounts/HTSeq/STAR + Salmon quantification.</p></div>
+      <div class="card"><h3>Differential expression</h3><p>Metadata-driven DESeq2 (+ edgeR), multifactor/paired/batch models, full diagnostic plots.</p></div>
+      <div class="card"><h3>Fusions &amp; splicing</h3><p>STAR-Fusion and rMATS (SE/RI/A5SS/A3SS/MXE).</p></div>
+      <div class="card"><h3>Functional biology</h3><p>clusterProfiler ORA (GO/KEGG/Reactome) and optional GSEA.</p></div>
+      <div class="card"><h3>Four reports</h3><p>Executive, Technical, QC and Differential HTML for every audience.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Reproducible by construction</h2>
+    <p>Immutable Docker/Apptainer image, version-pinned toolchain, per-run software-version
+       capture, SHA-256 checksums over deliverables, and a tool-free <code>-stub-run</code> that
+       validates the whole topology in CI. Same inputs + same container = same outputs.</p>
+    <pre><code># Validate the entire pipeline with no tools or genomes:
+python3 examples/scripts/make_synthetic.py
+NXF_SYNTAX_PARSER=v1 nextflow run main.nf -profile test -stub-run</code></pre>
+  </section>
+
+  <footer>
+    MIT © 2026 Eric Bareke, Ethan M., and Conrad B. ·
+    <a href="https://github.com/ebareke/ultimaWTExp">github.com/ebareke/ultimaWTExp</a>
+  </footer>
+</div>
+</body>
+</html>

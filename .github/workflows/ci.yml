@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+env:
+  NXF_ANSI_LOG: false
+  NXF_SYNTAX_PARSER: v1
+
+jobs:
+  lint:
+    name: lint (config + scripts)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v2
+        with: { version: 'latest-stable' }
+      - name: Validate Nextflow config resolves
+        run: nextflow config -profile test >/dev/null
+      - name: Byte-compile Python helpers
+        run: python3 -m py_compile bin/*.py examples/scripts/*.py
+      - name: Parse R helpers
+        run: |
+          sudo apt-get update && sudo apt-get install -y r-base-core
+          for f in bin/*.r; do Rscript -e "invisible(parse('$f'))" && echo "ok $f"; done
+
+  stub:
+    name: stub run (nextflow ${{ matrix.nxf_version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nxf_version: ['24.10.5', 'latest-stable']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v2
+        with: { version: ${{ matrix.nxf_version }} }
+      - name: Generate the synthetic test dataset
+        run: python3 examples/scripts/make_synthetic.py
+      - name: Stub-run the pipeline (validates the full topology, no tools)
+        run: nextflow run main.nf -profile test -stub-run --outdir ci_results
+      - name: Check key deliverables were produced
+        run: |
+          set -euo pipefail
+          test -f ci_results/multiqc/multiqc_report.html
+          test -f ci_results/quantification/matrices/counts.raw.tsv
+          test -n "$(find ci_results/differential_expression -name '*.deseq2_results.tsv' -print -quit)"
+          test -f ci_results/SHA256SUMS.txt
+
+  test_suite:
+    name: tool-free assertions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run the unit/contract test suite
+        run: bash tests/test_pipeline.sh

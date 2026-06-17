@@ -1,0 +1,48 @@
+# Apptainer / Singularity definition for ultimaWTExp.
+#
+# Two ways to build:
+#
+#   # (a) From the published container image (recommended once it exists):
+#   apptainer build ultimawtexp.sif containers/ultimawtexp.def
+#
+#   # (b) From a locally-built Docker image, no registry needed:
+#   docker build -t ultimawtexp:1.0.0 .
+#   apptainer build ultimawtexp.sif docker-daemon://ultimawtexp:1.0.0
+#
+# The resulting .sif bundles the whole RNA-seq toolchain plus the pipeline's
+# helper scripts, so it runs every process on an HPC cluster without Docker.
+
+Bootstrap: docker
+From: ghcr.io/ebareke/ultimawtexp:1.0.0
+
+%labels
+    Author        Eric Bareke, Ethan M., Conrad B.
+    Version       1.0.0
+    Description   Reproducible RNA-seq workflow — FASTQ to interpretation reports
+    Homepage      https://ebareke.github.io/ultimaWTExp/
+
+%help
+    ultimaWTExp — end-to-end RNA-seq processing, quantification, differential
+    expression and functional interpretation.
+
+    This image is consumed by the Nextflow pipeline:
+        nextflow run ebareke/ultimaWTExp -profile apptainer \
+            --input samplesheet.csv --fasta genome.fa --gtf genes.gtf
+
+    Bundled: FastQC, fastp, Trim Galore, Cutadapt, STAR, HISAT2, Salmon,
+    samtools, featureCounts, HTSeq, Qualimap, RSeQC, Picard, preseq,
+    STAR-Fusion, rMATS, MultiQC, DESeq2, edgeR, clusterProfiler, dupRadar.
+
+%environment
+    export PATH=/opt/conda/bin:/opt/ultimawtexp/bin:$PATH
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export XDG_CACHE_HOME=/tmp/.cache
+
+%runscript
+    exec "$@"
+
+%test
+    STAR --version
+    salmon --version
+    Rscript -e 'library(DESeq2); cat("DESeq2 OK\n")'

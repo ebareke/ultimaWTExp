@@ -1,0 +1,61 @@
+---
+title: "RNA-seq Analysis — QC Report"
+subtitle: "ultimaWTExp"
+date: today
+format:
+  html:
+    theme: cosmo
+    toc: true
+    embed-resources: true
+params:
+  data_dir: "data"
+  outdir: "results"
+  run_id: "NA"
+execute:
+  echo: false
+  warning: false
+---
+
+```{r setup}
+data_dir <- params$data_dir
+ls_data  <- if (dir.exists(data_dir)) list.files(data_dir, full.names = TRUE) else character(0)
+```
+
+Audience: **sequencing facilities and data managers**. This report orients you to
+the quality-control evidence; the interactive detail is in the MultiQC report.
+
+## MultiQC
+
+The aggregated, interactive QC report is the primary artefact:
+
+> **`multiqc/multiqc_report.html`**
+
+It consolidates FastQC (raw + trimmed), trimming logs, STAR/HISAT2 alignment
+summaries, samtools stats/flagstat/idxstats, Picard duplication and RNA-seq
+metrics, Qualimap, RSeQC, preseq and dupRadar — plus the exact software versions.
+
+## Metrics covered
+
+| Stage | Metric | Tool |
+|---|---|---|
+| Reads | counts, base quality, GC, adapters, duplication, overrepresented seqs | FastQC |
+| Trimming | adapter/quality/polyG-X removal | fastp / Trim Galore / Cutadapt |
+| Alignment | mapping rate, multimapping | STAR / HISAT2, samtools |
+| Duplication | optical/PCR dup rate, dup-vs-expression | Picard, dupRadar |
+| Composition | exonic/intronic/intergenic, 5'→3' bias | Picard CollectRnaSeqMetrics, Qualimap |
+| Coverage | gene-body coverage uniformity | RSeQC |
+| Strandedness | inferred protocol | RSeQC infer_experiment |
+| Junctions | junction saturation / annotation | RSeQC |
+| Complexity | library saturation curve | preseq |
+
+```{r files, results='asis'}
+if (length(ls_data)) {
+  cat("\n### Artefacts staged for this report\n\n")
+  for (f in basename(ls_data)) cat("- `", f, "`\n", sep = "")
+}
+```
+
+::: {.callout-tip}
+A sample failing several FastQC modules, with low mapping rate or strong 3' bias,
+is a candidate for re-prep or exclusion — flag it back to the submitting lab.
+:::

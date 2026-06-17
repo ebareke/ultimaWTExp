@@ -1,0 +1,35 @@
+# Pipeline outputs
+results/
+stub_results/
+ci_results/
+test_results/
+
+# Nextflow
+.nextflow/
+.nextflow.log*
+work/
+
+# Container images
+*.sif
+
+# Generated example inputs (reproduced deterministically by make_synthetic.py)
+examples/data/*.fastq.gz
+examples/data/genome.fa
+examples/data/genes.gtf
+examples/data/samplesheet.csv
+examples/data/sample_design.tsv
+
+# Scratch / logs
+cfg_out.txt
+stub_out.txt
+config_err.txt
+*.pyc
+__pycache__/
+
+# Local agent / tooling files (not part of the published project)
+CLAUDE.md
+AGENTS.md
+.claude/
+
+# macOS
+.DS_Store

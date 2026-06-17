@@ -1,0 +1,60 @@
+---
+title: "RNA-seq Analysis — Differential Expression Report"
+subtitle: "ultimaWTExp"
+date: today
+format:
+  html:
+    theme: cosmo
+    toc: true
+    embed-resources: true
+params:
+  data_dir: "data"
+  outdir: "results"
+  run_id: "NA"
+execute:
+  echo: false
+  warning: false
+---
+
+```{r setup}
+data_dir <- params$data_dir
+ls_data  <- if (dir.exists(data_dir)) list.files(data_dir, full.names = TRUE) else character(0)
+de_files <- ls_data[grepl("deseq2_results", basename(ls_data))]
+```
+
+Audience: **researchers** interpreting the comparisons. Each contrast below lists
+the most significant genes and points to its diagnostic plots and enrichment
+tables in the results tree.
+
+```{r per-contrast, results='asis'}
+if (!length(de_files)) {
+  cat("_No differential-expression results were generated for this run._\n")
+} else for (f in de_files) {
+  cid <- sub("\\.deseq2_results.tsv$", "", basename(f))
+  d <- tryCatch(read.delim(f, check.names = FALSE), error = function(e) NULL)
+  if (is.null(d)) next
+  padj <- if ("padj" %in% names(d)) d$padj else rep(NA, nrow(d))
+  lfc  <- if ("log2FoldChange" %in% names(d)) d$log2FoldChange else rep(NA, nrow(d))
+  sig  <- !is.na(padj) & padj < 0.05
+  cat("\n## ", cid, "\n\n")
+  cat(sprintf("- Tested: **%d** genes; significant (padj<0.05): **%d** (up %d / down %d)\n\n",
+              nrow(d), sum(sig), sum(sig & lfc > 0, na.rm = TRUE), sum(sig & lfc < 0, na.rm = TRUE)))
+  top <- head(d[order(padj), ], 15)
+  print(knitr::kable(top, digits = 4, caption = paste("Top genes —", cid)))
+  cat("\n\nDiagnostics: `differential_expression/deseq2/", cid,
+      "/` (PCA, MA, volcano, dispersion, sample-distance).\n", sep = "")
+}
+```
+
+## Interpreting the plots
+
+- **PCA** — global structure; condition should drive separation. Batch-driven
+  PC1 suggests adding `--blocking_factors batch`.
+- **MA / volcano** — effect size vs significance; symmetric volcano = healthy.
+- **Dispersion** — DESeq2 fit sanity check; points should hug the fitted curve.
+- **Sample-distance heatmap** — replicate concordance and outlier detection.
+
+::: {.callout-note}
+Functional interpretation (GO / KEGG / Reactome ORA, optional GSEA) for these gene
+lists is under `enrichment/`. Run id: `r params$run_id`.
+:::

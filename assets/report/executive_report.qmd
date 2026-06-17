@@ -1,0 +1,73 @@
+---
+title: "RNA-seq Analysis — Executive Summary"
+subtitle: "ultimaWTExp"
+date: today
+format:
+  html:
+    theme: cosmo
+    toc: true
+    embed-resources: true
+params:
+  data_dir: "data"
+  outdir: "results"
+  run_id: "NA"
+execute:
+  echo: false
+  warning: false
+---
+
+```{r setup}
+data_dir <- params$data_dir
+ls_data  <- if (dir.exists(data_dir)) list.files(data_dir, full.names = TRUE) else character(0)
+read_if  <- function(pat) {
+  f <- ls_data[grepl(pat, basename(ls_data))]
+  if (length(f)) tryCatch(read.delim(f[1], check.names = FALSE), error = function(e) NULL) else NULL
+}
+```
+
+## Purpose
+
+This is the high-level summary for **Principal Investigators, project managers and
+collaborators**. It reports what was measured, the headline differential-expression
+findings, and where to find the detailed evidence. Technical depth lives in the
+companion *Technical* and *QC* reports.
+
+## What was run
+
+ultimaWTExp processed the submitted FASTQ files end to end: read QC and trimming,
+alignment, gene/transcript quantification, differential expression, and functional
+interpretation. Every step's exact software version is recorded in
+`pipeline_info/software_versions.yml`, and all primary deliverables are checksummed
+in `SHA256SUMS.txt` for reproducibility.
+
+## Headline results
+
+```{r headline, results='asis'}
+de_files <- ls_data[grepl("deseq2_results", basename(ls_data))]
+if (length(de_files) == 0) {
+  cat("No differential-expression tables were produced (no design / contrasts).\n")
+} else {
+  for (f in de_files) {
+    d <- tryCatch(read.delim(f, check.names = FALSE), error = function(e) NULL)
+    if (is.null(d)) next
+    cid <- sub("\\.deseq2_results.tsv$", "", basename(f))
+    padj <- if ("padj" %in% names(d)) d$padj else rep(NA, nrow(d))
+    sig  <- sum(!is.na(padj) & padj < 0.05)
+    cat(sprintf("- **%s**: %d genes tested, **%d significant** (padj < 0.05).\n",
+                cid, nrow(d), sig))
+  }
+}
+```
+
+## Where to look next
+
+| Question | Deliverable |
+|---|---|
+| Are the libraries good quality? | `multiqc/multiqc_report.html`, *QC report* |
+| Which genes changed? | `differential_expression/`, *Differential report* |
+| What biology is implicated? | `enrichment/` (GO / KEGG / Reactome) |
+| How were results produced? | `pipeline_info/`, *Technical report* |
+
+::: {.callout-note}
+Generated automatically by ultimaWTExp. Run id: `r params$run_id`.
+:::

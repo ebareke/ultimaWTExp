@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use ultimaWTExp, please cite it as below."
+title: "ultimaWTExp: a reproducible Nextflow RNA-seq workflow from FASTQ to biological interpretation"
+type: software
+version: 1.0.0
+date-released: 2026-06-16
+license: MIT
+repository-code: "https://github.com/ebareke/ultimaWTExp"
+url: "https://ebareke.github.io/ultimaWTExp/"
+authors:
+  - given-names: Eric
+    family-names: Bareke
+    email: bareke.eric@gmail.com
+  - given-names: Ethan
+    family-names: M.
+    email: eb.bioinfo+ethan@pm.me
+  - given-names: Conrad
+    family-names: B.
+    email: eb.bioinfo+conrad@pm.me
+keywords:
+  - RNA-seq
+  - transcriptomics
+  - differential-expression
+  - alternative-splicing
+  - gene-fusion
+  - Nextflow
+  - reproducibility

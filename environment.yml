@@ -1,0 +1,75 @@
+# ===========================================================================
+# ultimaWTExp conda environment — the complete RNA-seq toolchain.
+#
+#   mamba env create -f environment.yml
+#   mamba activate ultimawtexp
+#
+# The same file is consumed at Docker build time (see Dockerfile), so the
+# container bundles every tool the pipeline invokes and no software needs to be
+# installed on the host beyond Nextflow + a container engine. Versions are kept
+# as compatible lower bounds so the bioconda solver stays consistent.
+# ===========================================================================
+name: ultimawtexp
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  # ---- Core / glue ----
+  - python >=3.9
+  - pandas >=1.5
+  - pip
+  - procps-ng
+
+  # ---- Pre-alignment QC + trimming ----
+  - fastqc >=0.12
+  - fastp >=0.23
+  - trim-galore >=0.6.10
+  - cutadapt >=4.4
+  - fastq-screen >=0.15
+  - multiqc >=1.21
+
+  # ---- Reference + alignment ----
+  - star >=2.7.10
+  - hisat2 >=2.2.1
+  - salmon >=1.10
+  - samtools >=1.18
+  - bedtools >=2.31
+  - gffread >=0.12
+  - ucsc-gtftogenepred
+  - ucsc-genepredtobed
+
+  # ---- Quantification ----
+  - subread >=2.0.6           # featureCounts
+  - htseq >=2.0
+
+  # ---- Post-alignment QC ----
+  - qualimap >=2.3
+  - rseqc >=5.0
+  - picard >=3.1
+  - preseq >=3.2
+
+  # ---- Fusion + splicing ----
+  - star-fusion >=1.12
+  - rmats >=4.3
+
+  # ---- R / Bioconductor: DE, enrichment, QC ----
+  - r-base >=4.3
+  - bioconductor-deseq2 >=1.40
+  - bioconductor-edger >=3.42
+  - bioconductor-tximport >=1.28
+  - bioconductor-clusterprofiler >=4.8
+  - bioconductor-reactomepa >=1.44
+  - bioconductor-dupradar >=1.30
+  - bioconductor-org.hs.eg.db
+  - bioconductor-org.mm.eg.db
+  - bioconductor-org.rn.eg.db
+  - bioconductor-enrichplot
+  - r-msigdbr
+  - r-ggplot2
+  - r-pheatmap
+  - r-optparse
+  - r-rmarkdown
+  - r-knitr
+
+  # ---- Reporting ----
+  - quarto >=1.4

@@ -1,0 +1,83 @@
+---
+title: "RNA-seq Analysis — Technical Report"
+subtitle: "ultimaWTExp"
+date: today
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-fold: true
+    embed-resources: true
+params:
+  data_dir: "data"
+  outdir: "results"
+  run_id: "NA"
+execute:
+  echo: false
+  warning: false
+---
+
+```{r setup}
+data_dir <- params$data_dir
+ls_data  <- if (dir.exists(data_dir)) list.files(data_dir, full.names = TRUE) else character(0)
+```
+
+Audience: **bioinformaticians, data scientists, geneticists**. This report documents
+methods, parameters and intermediate artefacts in enough detail to reproduce or
+audit the analysis.
+
+## Pipeline
+
+```
+FASTQ ─▶ FastQC ─▶ trim (fastp/Trim Galore/Cutadapt) ─▶ FastQC
+      ─▶ align (STAR 2-pass / HISAT2) ─▶ samtools + Picard + Qualimap + RSeQC + preseq + dupRadar
+      ─▶ quantify (featureCounts / HTSeq / STAR + Salmon→tximport)
+      ─▶ DESeq2 (+edgeR) ─▶ clusterProfiler (ORA/GSEA)
+      ─▶ STAR-Fusion, rMATS ─▶ MultiQC + reports
+```
+
+## Count matrices
+
+```{r matrices, results='asis'}
+for (m in c("raw", "tpm", "fpkm", "cpm")) {
+  f <- ls_data[grepl(paste0("counts\\.", m, "\\.tsv$"), basename(ls_data))]
+  if (length(f)) {
+    d <- tryCatch(read.delim(f[1], check.names = FALSE), error = function(e) NULL)
+    if (!is.null(d)) cat(sprintf("- **%s**: %d genes × %d samples (`%s`)\n",
+                                 toupper(m), nrow(d), ncol(d) - 1, basename(f[1])))
+  }
+}
+```
+
+## Differential expression — methods
+
+DE was computed with **DESeq2** (negative-binomial GLM, Wald test, BH-adjusted).
+The design formula adds any `--blocking_factors` (e.g. `batch`, `subject_id`)
+ahead of the variable of interest, so multifactor, paired and batch-corrected
+models are handled by the same code path. The reference level sets the
+fold-change denominator. When `--run_edger` is set, edgeR's quasi-likelihood
+F-test provides an orthogonal cross-check.
+
+```{r de-tables, results='asis'}
+de_files <- ls_data[grepl("deseq2_results", basename(ls_data))]
+if (!length(de_files)) cat("_No DE tables present._\n")
+for (f in de_files) {
+  cid <- sub("\\.deseq2_results.tsv$", "", basename(f))
+  d <- tryCatch(read.delim(f, check.names = FALSE), error = function(e) NULL)
+  if (is.null(d)) next
+  cat("\n### ", cid, "\n\n")
+  top <- head(d[order(d$padj), ], 10)
+  print(knitr::kable(top, digits = 4))
+}
+```
+
+## Reproducibility
+
+- Exact tool versions: `pipeline_info/software_versions.yml`
+- Execution trace / timeline / DAG: `pipeline_info/`
+- Deliverable checksums: `SHA256SUMS.txt`
+- Containers pin the entire toolchain; `-resume` re-uses cached steps.
+
+::: {.callout-note}
+Run id: `r params$run_id`.
+:::
