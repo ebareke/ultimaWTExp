@@ -79,8 +79,10 @@ all versions/QC ─▶ REPORTING ─▶ MultiQC + 4 HTML reports + checksums
 The same modules run unchanged across executors (`local`/`slurm`/`pbs`/`lsf`/
 `sge`/`awsbatch`/`google`) and software backends (`docker`/`singularity`/
 `apptainer`/`podman`/`conda`/`wave`) — selected purely by `-profile`. One
-container image carries the whole toolchain, so process definitions never depend
-on host software.
+container image carries the bulk of the toolchain; the two tools with
+irreconcilable dependencies (STAR-Fusion pins `samtools <1.10`, rMATS) are
+pinned to their official upstream images per-process in `conf/modules.config`.
+Either way, process definitions never depend on host software.
 
 ## Extending the pipeline
 

@@ -37,8 +37,9 @@ Documentation: **<https://ebareke.github.io/ultimaWTExp/>**
   PCA / MA / volcano / dispersion / heatmap figures.
 - 🖥️ **Laptop *and* HPC *and* cloud** — `local`, `slurm`, `pbs`, `lsf`, `sge`,
   `awsbatch`, `google` executors; `-resume`, per-process resource profiles.
-- 📦 **Immutable containers** — one Docker / Apptainer image bundles the entire
-  toolchain; no host installs beyond Nextflow + a container engine.
+- 📦 **Immutable containers** — one Docker / Apptainer image bundles the
+  toolchain (STAR-Fusion and rMATS run from their own pinned upstream images);
+  no host installs beyond Nextflow + a container engine.
 - 🔁 **Reproducible** — version-pinned environment, recorded software versions,
   SHA-256 checksums over deliverables, and a tool-free `-stub-run` that
   validates the whole topology in CI.

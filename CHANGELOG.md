@@ -44,9 +44,11 @@ on Nextflow DSL2.
   Reactome) and optional GSEA (MSigDB or custom GMT).
 - **Reporting**: four audience-specific HTML reports (Executive, Technical, QC,
   Differential) via Quarto/RMarkdown, plus MultiQC.
-- **Reproducibility**: single immutable Docker/Apptainer image bundling the full
-  toolchain, version-pinned `environment.yml`, per-run software-version capture,
-  and SHA-256 checksums over deliverables.
+- **Reproducibility**: immutable Docker/Apptainer image bundling the toolchain
+  (STAR-Fusion and rMATS pinned to their official upstream images per-process,
+  as their dependencies cannot coexist with modern samtools/STAR), version-
+  pinned `environment.yml`, per-run software-version capture, and SHA-256
+  checksums over deliverables.
 - **Portability**: `local`, `slurm`, `pbs`, `lsf`, `sge`, `awsbatch`, `google`
   executors and `docker`/`singularity`/`apptainer`/`podman`/`conda`/`wave`
   software profiles; resource ceilings via `resourceLimits`.

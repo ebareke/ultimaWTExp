@@ -48,9 +48,11 @@ dependencies:
   - picard >=3.1
   - preseq >=3.2
 
-  # ---- Fusion + splicing ----
-  - star-fusion >=1.12
-  - rmats >=4.3
+  # NOTE: STAR-Fusion and rMATS are intentionally NOT in this environment.
+  # STAR-Fusion pins samtools <1.10, which is irreconcilable with the modern
+  # samtools/STAR the rest of the pipeline requires. They run from their own
+  # official upstream images, assigned per-process in conf/modules.config
+  # (STAR_FUSION -> trinityctat/starfusion, RMATS -> xinglab/rmats).
 
   # ---- R / Bioconductor: DE, enrichment, QC ----
   - r-base >=4.3

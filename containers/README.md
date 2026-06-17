@@ -42,11 +42,23 @@ nextflow run .. -profile apptainer --input samplesheet.csv --fasta genome.fa --g
 | Salmon | transcript quantification |
 | samtools, Picard, Qualimap, RSeQC, preseq | alignment QC |
 | featureCounts (subread), HTSeq | gene-level counting |
-| STAR-Fusion | fusion detection |
-| rMATS | alternative splicing |
 | DESeq2, edgeR, tximport, dupRadar | differential expression / QC (R) |
 | clusterProfiler, ReactomePA, msigdbr, org.\*.eg.db | enrichment (R) |
 | MultiQC, Quarto | reporting |
 
 The full pinned list is in [`environment.yml`](../environment.yml). You can also
 run the pipeline outside a container with `mamba env create -f environment.yml`.
+
+### Two tools run from their own images
+
+**STAR-Fusion** and **rMATS** are *not* in this image: STAR-Fusion's recipe pins
+`samtools <1.10`, which cannot coexist with the modern `samtools`/`STAR` the rest
+of the pipeline needs. The pipeline therefore runs them from their official
+upstream images, assigned per-process in `conf/modules.config`:
+
+| Process | Image |
+|---|---|
+| `STAR_FUSION` | `trinityctat/starfusion:1.12.0` |
+| `RMATS` | `xinglab/rmats:v4.3.0` |
+
+With `-profile docker/singularity/apptainer` Nextflow pulls these automatically.
