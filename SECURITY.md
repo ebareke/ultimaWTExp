@@ -31,7 +31,7 @@ Known, documented limitations:
 
 ## Reporting a vulnerability
 
-Email **bareke.eric@gmail.com** with a description and reproduction steps.
+Email **eb.bioinfo@pm.me** with a description and reproduction steps.
 Please do not open public issues for exploitable problems before a fix is
 available. You can expect an acknowledgement within a few days; fixes are
 best-effort but security reports get priority.
