@@ -12,6 +12,7 @@
 #   docker build -t ultimawtexp:1.0.0 .
 #   docker run --rm ultimawtexp:1.0.0 fastqc --version
 #
+# Image: ghcr.io/ebareke/ultimawtexp:1.0.0 (GHCR) · ebareke/ultimawtexp:1.0.0 (Docker Hub)
 # ---------------------------------------------------------------------------
 FROM mambaorg/micromamba:1.5-jammy
 
