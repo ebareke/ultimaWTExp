@@ -13,7 +13,7 @@
 # helper scripts, so it runs every process on an HPC cluster without Docker.
 
 Bootstrap: docker
-From: ghcr.io/ebareke/ultimawtexp:1.0.0
+From: ebareke/ultimawtexp:1.0.0
 
 %labels
     Author        Eric Bareke, Ethan M., Conrad B.

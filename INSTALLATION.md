@@ -40,7 +40,8 @@ cd ultimaWTExp
 
 ### Docker
 ```bash
-docker pull ghcr.io/ebareke/ultimawtexp:1.0.0
+docker pull ebareke/ultimawtexp:1.0.0          # Docker Hub (default image)
+# GHCR mirror: docker pull ghcr.io/ebareke/ultimawtexp:1.0.0
 # or build locally:
 docker build -t ultimawtexp:1.0.0 .
 ```
