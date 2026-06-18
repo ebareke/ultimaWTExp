@@ -134,6 +134,7 @@ examples/            synthetic dataset + runner     |   tests/  tool-free suite
 | [RELEASE_PROCESS.md](RELEASE_PROCESS.md) | How releases are cut |
 | [ROADMAP.md](ROADMAP.md) · [CHANGELOG.md](CHANGELOG.md) | Plans · history |
 | [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md) | Contributing · security |
+| [CITATION.md](CITATION.md) · [CITATION.cff](CITATION.cff) | How to cite the workflow and its tools |
 
 ## Authors
 
