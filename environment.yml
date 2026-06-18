@@ -75,3 +75,5 @@ dependencies:
 
   # ---- Reporting ----
   - quarto >=1.4
+
+# CI: rebuild trigger 2026-06-18T14:30Z
